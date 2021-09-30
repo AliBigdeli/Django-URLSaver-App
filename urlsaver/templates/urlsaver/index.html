@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+
+{% block title %} URL Saver {% endblock %}
+
+{% block extra_css %}
+<style>
+  a {
+    cursor: pointer;
+  }
+
+  #pointer {
+    cursor: pointer;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="modal position-static d-block  py-5" tabindex="-1" role="dialog" id="modalSignin">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content rounded-5 shadow" id="task-container">
+      <div class="modal-header p-5 pb-4 border-bottom-0">
+        <!-- <h5 class="modal-title">Modal title</h5> -->
+        <h2 class="fw-bold mb-0">Url Saver App</h2>
+        <a type="button" class="btn-close" id="logout"></a>
+      </div>
+
+      <div class="modal-body p-5 pt-0" id="form-wrapper">
+
+        <form class="pt-3" id="form">
+          <div class="input-group mb-3">
+            <input type="url" class="form-control rounded-4" name="url" placeholder="Enter your keyword to search"
+              aria-label="Recipient's demanded url" aria-describedby="button-addon2" id="url">
+            <button class="btn btn-secondary" type="submit">Search</button>
+            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#CreateFormModal"><i
+                class="bi bi-plus-circle"></i></button>
+          </div>
+
+        </form>
+
+        <hr class="my-4">
+        <div id="list-wrapper">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="CreateFormModal" tabindex="-1" aria-labelledby="CreateFormModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="CreateFormModalLabel">Create Form</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="createForm">
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Title:</label>
+            <input type="text" class="form-control" id="title">
+          </div>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Url:</label>
+            <input type="url" aria-label="Recipient's demanded url" class="form-control" id="url">
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">Desctiptions:</label>
+            <textarea class="form-control" id="desctiptions"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Delete Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this link:</p>
+        <p>Title: <span id="deleteTitle"></span></p>
+        <p>URL: <a id="deleteUrl" href=""></a></p>
+        <p>Description: <span id="deleteDescription"></span></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <a type="button" class="btn btn-danger" id="deleteButton" href="">Remove</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Vertically centered scrollable modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailModalLabel">Link Detail</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="recipient-name" class="col-form-label">Title:</label>
+          <input class="form-control" id="detailTitle"></input>
+        </div>
+        <div class="mb-3">
+          <label for="recipient-name" class="col-form-label">Url:</label>
+          <input class="form-control" id="detailUrl"></input>
+        </div>
+        <div class="mb-3">
+          <label for="message-text" class="col-form-label">Descriptions:</label>
+          <textarea class="form-control" id="detailDescription"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+  base_url = "http://127.0.0.1:8000"
+
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  let csrftoken = getCookie('csrftoken');
+
+  var list_snapshot = []
+  buildList()
+
+  function buildList() {
+    var wrapper = document.getElementById('list-wrapper')
+    var url = `${base_url}/urlsaver/api/list-url/`
+    fetch(url)
+      .then((resp) => resp.json())
+      .then(function (data) {
+        // console.log('Data:', data)
+        var list = data
+        for (var i in list) {
+          try {
+            document.getElementById(`data-row-${i}`).remove()
+          } catch (err) {
+
+          }
+          var title = list[i].title
+          var link = list[i].url
+          var item = `
+                    <div class="input-group py-1" id="data-row-${i}">                        
+                        <div class="input-group">
+                          <span type="text" class="form-control detail" id="pointer" data-bs-toggle="modal" data-bs-target="#detailModal">${title}</span>
+                          <a type="button" class="btn btn-danger delete" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-trash"></i></a>   
+                          <a type="button" class="btn btn-primary" href="${link}" target="_blank"><i class="bi bi-link-45deg"></i></a>                           
+                        </div>                                                
+                    </div>`
+          wrapper.innerHTML += item
+        }
+
+        if (list_snapshot.length > list.length) {
+          for (var i = list.length; i < list_snapshot.length; i++) {
+            document.getElementById(`data-row-${i}`).remove()
+          }
+        }
+
+        list_snapshot = list
+
+        for (var i in list) {
+          var deleteBtn = document.getElementsByClassName('delete')[i]
+          deleteBtn.addEventListener('click', (function (item) {
+            return function () {
+              deleteModal(item)
+            }
+          })(list[i]))
+        }
+        for (var i in list) {
+          var detailBtn = document.getElementsByClassName('detail')[i]
+          detailBtn.addEventListener('click', (function (item) {
+            return function () {
+              detailModal(item)
+            }
+          })(list[i]))
+        }
+
+      });
+  }
+
+  function deleteModal(item) {
+    data = fetch(`${base_url}/urlsaver/api/detail-url/${item.id}/`, {
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+        'X-CSRFToken': csrftoken,
+      }
+    })
+      .then((resp) => resp.json())
+      .then(function (data) {
+        // console.log(data)
+        title = document.getElementById('deleteTitle')
+        url = document.getElementById('deleteUrl')
+        url.setAttribute('href', item.url)
+        description = document.getElementById('deleteDescription')
+        remove_btn = document.getElementById('deleteButton')
+
+        title.textContent = item.title
+        url.textContent = item.url
+        if (item.descriptions != null)
+          description.textContent = item.descriptions
+        else
+          description.textContent = "no descriptions"
+      })
+  }
+
+  function detailModal(item) {
+    data = fetch(`${base_url}/urlsaver/api/detail-url/${item.id}/`, {
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+        'X-CSRFToken': csrftoken,
+      }
+    })
+      .then((resp) => resp.json())
+      .then(function (data) {
+        // console.log(data)
+        title = document.getElementById('detailTitle')
+        url = document.getElementById('detailUrl')
+        description = document.getElementById('detailDescription')
+        title.value = item.title
+        url.value = item.url
+        description.value = item.descriptions
+
+
+      })
+  }
+
+  function deleteItem(item) {
+
+    fetch(`${base_url}/urlsaver/api/detail-url/${item.id}/`, {
+      method: 'DELETE',
+      headers: {
+        'Content-type': 'application/json',
+        'X-CSRFToken': csrftoken,
+      }
+    }).then((response) => {
+      buildList()
+    })
+  }
+
+
+  let form = document.getElementById('CreateFormModal')
+  form.addEventListener('submit', function (e) {
+    e.preventDefault()
+    console.log('Form submitted')
+    let url = `${base_url}/urlsaver/api/list-url/`
+    let obj_url = document.getElementById('url').value
+    let obj_title = document.getElementById('title').value
+    let obj_descriptions = document.getElementById('desciptions').value
+    var Http = new XMLHttpRequest();
+    Http.open("POST", url);
+    Http.setRequestHeader("Accept", "application/json");
+    Http.setRequestHeader("Content-Type", "application/json");
+    Http.setRequestHeader("X-CSRFToken", csrftoken);
+
+    Http.onreadystatechange = function () {
+      if (Http.readyState === 4) {
+        // // console.log(Http.status);
+        response = JSON.parse(Http.responseText);
+        // // console.log(response);
+        if (Http.status !== 201) {
+          alert(`Error: ${Http.status} \nMsg: ${response["detail"]}`)
+        }
+      }
+      buildList()
+      document.getElementById('form').reset()
+    }
+    data = JSON.stringify({ "title": obj_title, "url": obj_url, "descriptions": obj_descriptions })
+    Http.send(data);
+  });
+
+
+
+  let logout = document.getElementById('logout')
+  logout.addEventListener('click', function (e) {
+    const Http = new XMLHttpRequest();
+    const url = `${base_url}/accounts/api/logout/`
+    Http.open("GET", url);
+    Http.send();
+
+    Http.onreadystatechange = (e) => {
+      // console.log(Http.responseText)
+      if (Http.status == 200) {
+        location.reload();
+      }
+    }
+  })
+
+  document.addEventListener('submit', function (e) {
+    console.log("submited")
+  })
+</script>
+{% endblock %}
