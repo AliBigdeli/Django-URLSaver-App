@@ -28,7 +28,7 @@ SECRET_KEY = (
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -130,7 +130,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_ROOT = PROJECT_ROOT / 'staticfiles'
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles'),
 STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
@@ -164,7 +164,7 @@ REST_FRAMEWORK = {
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())

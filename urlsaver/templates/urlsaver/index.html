@@ -21,7 +21,7 @@
             <input type="text" class="form-control rounded-4" id="search" placeholder="Enter your keyword to search"
               aria-label="Recipient's demanded url" aria-describedby="button-addon2" id="url">
             <button class="btn btn-primary" type="button" id="CreateLink" data-bs-toggle="modal"
-              data-bs-target="#FormModal"><i class="bi bi-plus-circle"></i></button>         
+              data-bs-target="#FormModal"><i class="bi bi-plus-circle"></i></button>
           </div>
 
         </form>
@@ -67,7 +67,6 @@
 
 {% block extra_js %}
 <script>
-  base_url = "http://127.0.0.1:8000"
   let search_term = "";
   function getCookie(name) {
     var cookieValue = null;
@@ -99,7 +98,7 @@
 
   function buildList() {
     var wrapper = document.getElementById('list-wrapper')
-    var url = `${base_url}/urlsaver/api/list-url/`
+    var url = `/urlsaver/api/list-url/`
     fetch(url)
       .then((resp) => resp.json())
       .then(function (data) {
@@ -171,7 +170,7 @@
   }
 
   function deleteModal(item) {
-    data = fetch(`${base_url}/urlsaver/api/detail-url/${item.id}/`, {
+    data = fetch(`/urlsaver/api/detail-url/${item.id}/`, {
       method: 'GET',
       headers: {
         'Content-type': 'application/json',
@@ -202,7 +201,7 @@
   }
 
   function detailModal(item) {
-    data = fetch(`${base_url}/urlsaver/api/detail-url/${item.id}/`, {
+    data = fetch(`/urlsaver/api/detail-url/${item.id}/`, {
       method: 'GET',
       headers: {
         'Content-type': 'application/json',
@@ -235,7 +234,7 @@
 
   function deleteItem(item) {
 
-    fetch(`${base_url}/urlsaver/api/detail-url/${item}/`, {
+    fetch(`/urlsaver/api/detail-url/${item}/`, {
       method: 'DELETE',
       headers: {
         'Content-type': 'application/json',
@@ -262,7 +261,7 @@
   let logout = document.getElementById('logout')
   logout.addEventListener('click', function (e) {
     const Http = new XMLHttpRequest();
-    const url = `${base_url}/accounts/api/logout/`
+    const url = `/accounts/api/logout/`
     Http.open("GET", url);
     Http.send();
 
@@ -270,6 +269,9 @@
       // console.log(Http.responseText)
       if (Http.status == 200) {
         location.reload();
+      }
+      else {
+        alert(`Error: ${Http.status} \nMsg: ${response["non_field_errors"]}`)
       }
     }
   })
@@ -279,11 +281,11 @@
     let url
     let code
     if (update) {
-      url = `${base_url}/urlsaver/api/detail-url/${item_id}/`
+      url = `/urlsaver/api/detail-url/${item_id}/`
       code = 200
     }
     else {
-      url = `${base_url}/urlsaver/api/list-url/`
+      url = `/urlsaver/api/list-url/`
       code = 201
     }
 
