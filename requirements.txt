@@ -5,8 +5,8 @@ django-cors-headers
 markdown
 django-filter
 gunicorn 
-django-heroku
 django-decouple
 whitenoise
 psycopg2
 ConfigParser
+django-heroku
