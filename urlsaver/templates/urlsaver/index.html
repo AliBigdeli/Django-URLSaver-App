@@ -128,13 +128,15 @@
           }
           var title = list[i].title
           var link = list[i].url
+          var descriptions = list[i].descriptions
           var item = `
                     <div class="input-group py-1" id="data-row-${i}">                        
                         <div class="input-group">
-                          <span type="text" class="form-control ">${title}</span>                          
+                          <span type="text" class="form-control ">${title}</span>
+                                                   
                           <button type="button" class="btn btn-danger delete" data-bs-toggle="modal" data-bs-target="#FormModal"><i class="bi bi-trash"></i></button>   
                           <button class="btn btn-warning detail" type="button" data-bs-toggle="modal" data-bs-target="#FormModal"><i class="bi bi-pencil-square"></i></i></button>
-                          <button type="button" class="btn btn-primary" href="${link}" target="_blank"><i class="bi bi-link-45deg"></i></button>                           
+                          <a type="button" class="btn btn-primary" href="${link}" target="_blank"><i class="bi bi-link-45deg"></i></a>                           
                         </div>                                                
                     </div>`
           wrapper.innerHTML += item
