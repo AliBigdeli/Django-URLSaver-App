@@ -2,17 +2,7 @@
 
 {% block title %} URL Saver {% endblock %}
 
-{% block extra_css %}
-<style>
-  a {
-    cursor: pointer;
-  }
-
-  #pointer {
-    cursor: pointer;
-  }
-</style>
-{% endblock %}
+{% block extra_css %}{% endblock %}
 
 {% block content %}
 <div class="modal position-static d-block  py-5" tabindex="-1" role="dialog" id="modalSignin">
@@ -28,11 +18,10 @@
 
         <form class="pt-3" id="form">
           <div class="input-group mb-3">
-            <input type="url" class="form-control rounded-4" name="url" placeholder="Enter your keyword to search"
+            <input type="text" class="form-control rounded-4" id="search" placeholder="Enter your keyword to search"
               aria-label="Recipient's demanded url" aria-describedby="button-addon2" id="url">
-            <button class="btn btn-secondary" type="submit">Search</button>
-            <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#CreateFormModal"><i
-                class="bi bi-plus-circle"></i></button>
+            <button class="btn btn-primary" type="button" id="CreateLink" data-bs-toggle="modal"
+              data-bs-target="#FormModal"><i class="bi bi-plus-circle"></i></button>         
           </div>
 
         </form>
@@ -45,85 +34,31 @@
   </div>
 </div>
 
-<div class="modal fade" id="CreateFormModal" tabindex="-1" aria-labelledby="CreateFormModalLabel" aria-hidden="true">
+<div class="modal fade" id="FormModal" tabindex="-1" aria-labelledby="FormModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="CreateFormModalLabel">Create Form</h5>
+        <h5 class="modal-title" id="FormModalLabel">Create Form</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form id="createForm">
           <div class="mb-3">
             <label for="recipient-name" class="col-form-label">Title:</label>
-            <input type="text" class="form-control" id="title">
+            <input type="text" class="form-control" id="FormModalTitle">
           </div>
           <div class="mb-3">
             <label for="recipient-name" class="col-form-label">Url:</label>
-            <input type="url" aria-label="Recipient's demanded url" class="form-control" id="url">
+            <input type="url" aria-label="Recipient's demanded url" class="form-control" id="FormModalUrl">
           </div>
           <div class="mb-3">
-            <label for="message-text" class="col-form-label">Desctiptions:</label>
-            <textarea class="form-control" id="desctiptions"></textarea>
+            <label for="message-text" class="col-form-label">Descriptions:</label>
+            <textarea class="form-control" id="FormModalDescriptions"></textarea>
           </div>
-        </form>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" type="submit" class="btn btn-primary">Save</button>
+      <div class="modal-footer" id="ModalFooter">
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="deleteModalLabel">Delete Confirmation</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p>Are you sure you want to delete this link:</p>
-        <p>Title: <span id="deleteTitle"></span></p>
-        <p>URL: <a id="deleteUrl" href=""></a></p>
-        <p>Description: <span id="deleteDescription"></span></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <a type="button" class="btn btn-danger" id="deleteButton" href="">Remove</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Vertically centered scrollable modal -->
-<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="detailModalLabel">Link Detail</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label for="recipient-name" class="col-form-label">Title:</label>
-          <input class="form-control" id="detailTitle"></input>
-        </div>
-        <div class="mb-3">
-          <label for="recipient-name" class="col-form-label">Url:</label>
-          <input class="form-control" id="detailUrl"></input>
-        </div>
-        <div class="mb-3">
-          <label for="message-text" class="col-form-label">Descriptions:</label>
-          <textarea class="form-control" id="detailDescription"></textarea>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" type="submit" class="btn btn-primary">Save</button>
-      </div>
+      </form>
     </div>
   </div>
 </div>
@@ -133,7 +68,7 @@
 {% block extra_js %}
 <script>
   base_url = "http://127.0.0.1:8000"
-
+  let search_term = "";
   function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -152,6 +87,13 @@
 
   let csrftoken = getCookie('csrftoken');
 
+
+  const search = document.getElementById("search");
+  search.addEventListener("input", (event) => {
+    search_term = event.target.value.toLowerCase();
+    buildList()
+  });
+
   var list_snapshot = []
   buildList()
 
@@ -162,6 +104,21 @@
       .then((resp) => resp.json())
       .then(function (data) {
         // console.log('Data:', data)
+        if (search_term != "")
+          data = data
+            .filter((item) => {
+              if (item.descriptions === null) {
+                result = item.title.toLowerCase().includes(search_term)
+                  || item.url.toLowerCase().includes(search_term)
+              }
+              else {
+                result = item.title.toLowerCase().includes(search_term)
+                  || item.url.toLowerCase().includes(search_term)
+                  || item.descriptions.toLowerCase().includes(search_term)
+              }
+              return result
+            })
+
         var list = data
         for (var i in list) {
           try {
@@ -174,9 +131,10 @@
           var item = `
                     <div class="input-group py-1" id="data-row-${i}">                        
                         <div class="input-group">
-                          <span type="text" class="form-control detail" id="pointer" data-bs-toggle="modal" data-bs-target="#detailModal">${title}</span>
-                          <a type="button" class="btn btn-danger delete" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-trash"></i></a>   
-                          <a type="button" class="btn btn-primary" href="${link}" target="_blank"><i class="bi bi-link-45deg"></i></a>                           
+                          <span type="text" class="form-control ">${title}</span>                          
+                          <button type="button" class="btn btn-danger delete" data-bs-toggle="modal" data-bs-target="#FormModal"><i class="bi bi-trash"></i></button>   
+                          <button class="btn btn-warning detail" type="button" data-bs-toggle="modal" data-bs-target="#FormModal"><i class="bi bi-pencil-square"></i></i></button>
+                          <button type="button" class="btn btn-primary" href="${link}" target="_blank"><i class="bi bi-link-45deg"></i></button>                           
                         </div>                                                
                     </div>`
           wrapper.innerHTML += item
@@ -221,18 +179,23 @@
       .then((resp) => resp.json())
       .then(function (data) {
         // console.log(data)
-        title = document.getElementById('deleteTitle')
-        url = document.getElementById('deleteUrl')
-        url.setAttribute('href', item.url)
-        description = document.getElementById('deleteDescription')
-        remove_btn = document.getElementById('deleteButton')
+        title = document.getElementById('FormModalTitle')
+        url = document.getElementById('FormModalUrl')
+        description = document.getElementById('FormModalDescriptions')
+        modal_footer = document.getElementById('ModalFooter')
+        modal_label = document.getElementById('FormModalLabel')
+        modal_label.innerHTML = "Delete Form"
 
-        title.textContent = item.title
-        url.textContent = item.url
-        if (item.descriptions != null)
-          description.textContent = item.descriptions
+        modal_footer.innerHTML = "";
+        buttons = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" onclick="deleteItem(${item.id})"data-bs-dismiss="modal">Delete</button>`
+        $(modal_footer).html(buttons);
+        title.value = data.title
+        url.value = data.url
+        if (data.descriptions != null)
+          description.value = data.descriptions
         else
-          description.textContent = "no descriptions"
+          description.value = "no descriptions"
       })
   }
 
@@ -247,20 +210,30 @@
       .then((resp) => resp.json())
       .then(function (data) {
         // console.log(data)
-        title = document.getElementById('detailTitle')
-        url = document.getElementById('detailUrl')
-        description = document.getElementById('detailDescription')
-        title.value = item.title
-        url.value = item.url
-        description.value = item.descriptions
+        title = document.getElementById('FormModalTitle')
+        url = document.getElementById('FormModalUrl')
+        description = document.getElementById('FormModalDescriptions')
+        modal_label = document.getElementById('FormModalLabel')
 
+        modal_label.innerHTML = "Change Form"
+        modal_footer = document.getElementById('ModalFooter')
+        modal_footer.innerHTML = "";
+        buttons = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="createLink(update=true,item_id=${item.id})" id="SubmitButton" data-bs-dismiss="modal">Change</button>`
+        $(modal_footer).html(buttons);
+        title.value = data.title
+        url.value = data.url
+        if (data.descriptions != null)
+          description.value = data.descriptions
+        else
+          description.value = "no descriptions"
 
       })
   }
 
   function deleteItem(item) {
 
-    fetch(`${base_url}/urlsaver/api/detail-url/${item.id}/`, {
+    fetch(`${base_url}/urlsaver/api/detail-url/${item}/`, {
       method: 'DELETE',
       headers: {
         'Content-type': 'application/json',
@@ -271,38 +244,18 @@
     })
   }
 
-
-  let form = document.getElementById('CreateFormModal')
-  form.addEventListener('submit', function (e) {
-    e.preventDefault()
-    console.log('Form submitted')
-    let url = `${base_url}/urlsaver/api/list-url/`
-    let obj_url = document.getElementById('url').value
-    let obj_title = document.getElementById('title').value
-    let obj_descriptions = document.getElementById('desciptions').value
-    var Http = new XMLHttpRequest();
-    Http.open("POST", url);
-    Http.setRequestHeader("Accept", "application/json");
-    Http.setRequestHeader("Content-Type", "application/json");
-    Http.setRequestHeader("X-CSRFToken", csrftoken);
-
-    Http.onreadystatechange = function () {
-      if (Http.readyState === 4) {
-        // // console.log(Http.status);
-        response = JSON.parse(Http.responseText);
-        // // console.log(response);
-        if (Http.status !== 201) {
-          alert(`Error: ${Http.status} \nMsg: ${response["detail"]}`)
-        }
-      }
-      buildList()
-      document.getElementById('form').reset()
-    }
-    data = JSON.stringify({ "title": obj_title, "url": obj_url, "descriptions": obj_descriptions })
-    Http.send(data);
-  });
-
-
+  let create_btn = document.getElementById('CreateLink')
+  create_btn.addEventListener('click', function (e) {
+    let form = document.getElementById('createForm')
+    form.reset();
+    modal_label = document.getElementById('FormModalLabel')
+    modal_label.innerHTML = "Create Form"
+    modal_footer = document.getElementById('ModalFooter')
+    modal_footer.innerHTML = "";
+    buttons = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" onclick="createLink()" id="SubmitButton" data-bs-dismiss="modal">Create</button>`
+    $(modal_footer).html(buttons);
+  })
 
   let logout = document.getElementById('logout')
   logout.addEventListener('click', function (e) {
@@ -319,8 +272,43 @@
     }
   })
 
-  document.addEventListener('submit', function (e) {
-    console.log("submited")
-  })
+
+  function createLink(update = false, item_id = null) {
+    let url
+    let code
+    if (update) {
+      url = `${base_url}/urlsaver/api/detail-url/${item_id}/`
+      code = 200
+    }
+    else {
+      url = `${base_url}/urlsaver/api/list-url/`
+      code = 201
+    }
+
+    let obj_url = document.getElementById('FormModalUrl').value
+    let obj_title = document.getElementById('FormModalTitle').value
+    let obj_descriptions = document.getElementById('FormModalDescriptions').value
+    var Http = new XMLHttpRequest();
+    Http.open("POST", url);
+    Http.setRequestHeader("Accept", "application/json");
+    Http.setRequestHeader("Content-Type", "application/json");
+    Http.setRequestHeader("X-CSRFToken", csrftoken);
+
+    Http.onreadystatechange = function () {
+
+      if (Http.readyState === 4) {
+        // // console.log(Http.status);
+        response = JSON.parse(Http.responseText);
+        // // console.log(response);
+        if (Http.status !== code) {
+          alert(`Error: ${Http.status} \nMsg: ${response["detail"]}`)
+        }
+      }
+      buildList()
+      document.getElementById('createForm').reset()
+    }
+    data = JSON.stringify({ "title": obj_title, "url": obj_url, "descriptions": obj_descriptions })
+    Http.send(data);
+  }
 </script>
 {% endblock %}

@@ -45,6 +45,27 @@ class UrlDetailView(APIView):
         except Link.DoesNotExist:
             return None
 
+    def post(self, request, url_id, *args, **kwargs):
+        """
+        Updates the todo item with given url_id if exists
+        """
+        url_instance = self.get_object(url_id, request.user.id)
+        if not url_instance:
+            return Response(
+                {"detail": "Object with todo id does not exists"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        data = request.data
+        print(request.data)
+        data.update({"user": request.user.id})
+        serializer = UrlSerializer(
+            instance=url_instance, data=data, partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def get(self, request, url_id, *args, **kwargs):
         """
         Retrieves the Url with given url_id
