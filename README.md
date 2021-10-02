@@ -148,7 +148,7 @@ git push heroku master
 ### Database schema
 A simple view of the project model schema.
 <p align="center">
-<img src="" alt="database schema" width="300"/>
+<img src="https://user-images.githubusercontent.com/29748439/135718855-bc32466b-1622-4ba6-bfdd-99cdbe51b65a.png" alt="database schema" width="300"/>
 </p>
 
 ### Todo
