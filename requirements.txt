@@ -10,3 +10,5 @@ whitenoise
 psycopg2
 ConfigParser
 django-heroku
+flake8
+black

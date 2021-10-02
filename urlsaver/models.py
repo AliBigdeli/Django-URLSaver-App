@@ -8,7 +8,7 @@ class Link(models.Model):
     )
     title = models.CharField(max_length=255)
     url = models.URLField()
-    descriptions = models.TextField(blank=True,null=True)
+    descriptions = models.TextField(blank=True, null=True)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
@@ -19,4 +19,3 @@ class Link(models.Model):
     def __str__(self):
 
         return self.url
-
