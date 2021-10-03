@@ -112,9 +112,7 @@ heroku login
 
 #### development
 
-In order to use this app in local mode, after installing all dependencies please replace settings in "heroku_settings.py" with the original settings.py so that the configs will be switched to heroku mode.
-
-then in linux you might run into problem with install psycopg2 and here is a fix to that, just install theses packages and then re install the python package.
+in linux you might run into problem with install psycopg2 and here is a fix to that, just install theses packages and then re install the python package.
 
 Note: i am not sure if you will ran in to problem with windows or not but still linux is good to go.
 
@@ -127,6 +125,7 @@ after installing all dependencies all you have to do is to run the server.
 heroku local
 ```
 
+windows users: in order to be able to make changes and see the output the default bare django settings are included in settings_dev.py so you can replace with the main one and runserver as usual
 #### production
 In order to use this repo for production in heroku service, you have to push the repo to your heroku app.
 
@@ -145,6 +144,7 @@ git commit -am "Initial commit"
 git push heroku master
 ```
 
+Note: you can use the one click deploy on the top of the readme too
 ### Database schema
 A simple view of the project model schema.
 <p align="center">
