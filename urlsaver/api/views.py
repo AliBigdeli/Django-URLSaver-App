@@ -55,15 +55,14 @@ class UrlDetailView(APIView):
                 {"detail": "Object with todo id does not exists"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        data = request.data
-        print(request.data)
+        data = request.data        
         data.update({"user": request.user.id})
         serializer = UrlSerializer(
             instance=url_instance, data=data, partial=True
         )
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, url_id, *args, **kwargs):

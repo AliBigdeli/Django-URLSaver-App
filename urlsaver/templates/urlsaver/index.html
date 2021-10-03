@@ -49,7 +49,8 @@
           </div>
           <div class="mb-3">
             <label for="recipient-name" class="col-form-label">Url:</label>
-            <input type="url" aria-label="Recipient's demanded url" class="form-control" id="FormModalUrl">
+            <input type="url" aria-label="Recipient's demanded url" class="form-control" id="FormModalUrl"
+              placeholder="http://www.example.com" pattern="https?://.+" required>
           </div>
           <div class="mb-3">
             <label for="message-text" class="col-form-label">Descriptions:</label>
@@ -305,7 +306,7 @@
         response = JSON.parse(Http.responseText);
         // // console.log(response);
         if (Http.status !== code) {
-          alert(`Error: ${Http.status} \nMsg: ${response["detail"]}`)
+          alert(`Error: ${Http.status} \nMsg: ${Http.responseText}`)
         }
       }
       buildList()
@@ -314,5 +315,6 @@
     data = JSON.stringify({ "title": obj_title, "url": obj_url, "descriptions": obj_descriptions })
     Http.send(data);
   }
+  
 </script>
 {% endblock %}
