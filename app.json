@@ -1,0 +1,19 @@
+{
+    "name": "UrlSaver APP",
+    "description": "A django app project to keep your urls inside",
+    "repository": "https://github.com/AliBigdeli/Django-URLSaver-App",
+    "website": "https://alibigdeli.github.io",
+    "keywords": [
+      "django",
+      "djangorestframework",
+      "djangotemplate",
+      "python"
+    ],
+    "image": "heroku/python",    
+    "buildpacks": [
+      {
+        "url": "https://github.com/heroku/heroku-buildpack-python.git"
+      }
+    ],
+    "success_url": "/"
+  }
