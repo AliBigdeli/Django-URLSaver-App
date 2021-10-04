@@ -18,10 +18,15 @@
       "description": "username for your superuser"
     },
     "DJANGO_SUPERUSER_PASSWORD": {
-      "description": "password for your superuser"
+      "description": "password for your superuser, please choose an strong one"
     },
     "DJANGO_SUPERUSER_EMAIL": {
       "description": "email for your superuser"
+    }
+    ,
+    "SECRET_KEY": {
+      "description": "A secret key to encrypt data",
+      "generator": "secret"
     }
   },
   "image": "heroku/python",
