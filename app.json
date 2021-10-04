@@ -9,11 +9,7 @@
     "djangotemplate",
     "python"
   ],
-  "env": {
-    "DISABLE_COLLECTSTATIC": {
-      "description": "Don't run python manage.py collectstatic --noinput on deploy",
-      "value": "1"
-    },
+  "env": {    
     "DJANGO_SUPERUSER_USERNAME": {
       "description": "username for your superuser"
     },
