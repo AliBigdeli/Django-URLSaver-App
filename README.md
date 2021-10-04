@@ -125,7 +125,9 @@ after installing all dependencies all you have to do is to run the server.
 heroku local
 ```
 
-windows users: in order to be able to make changes and see the output the default bare django settings are included in settings_dev.py so you can replace with the main one and runserver as usual
+or
+
+you can simply run "manage.py runserver" as normal project but dont forget to install dependencies.
 #### production
 In order to use this repo for production in heroku service, you have to push the repo to your heroku app.
 
