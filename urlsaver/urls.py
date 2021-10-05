@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 
-appname = "urlsaver"
+app_name = "urlsaver"
 
 urlpatterns = [
     path("", views.indexView, name="index"),
