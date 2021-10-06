@@ -161,4 +161,5 @@ A simple view of the project model schema.
 
 ### Bugs or Opinion
 Feel free to let me know if there are any problems or any request you have for this repo.
-- [ ] Url field in modal doesn't get validated
+- [ ] Url field in modal doesn't get validated (Marzieh Izadi)
+- [x] Url field limited to 250 chars (now its 2000) (Mostafa Haghi)
